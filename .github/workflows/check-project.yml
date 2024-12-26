@@ -13,7 +13,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         PR_URL=$(jq -r '.pull_request.url' "$GITHUB_EVENT_PATH")
+        echo "PR_URL"
+        echo $PR_URL
         PROJECTS=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" "$PR_URL/projects")
+        echo "PROJECTS"
+        echo $PROJECTS
         if [ "$PROJECTS" = "[]" ]; then
           echo "This pull request is not associated with a project. Please associate it with a project."
           exit 1
