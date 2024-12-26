@@ -1,0 +1,20 @@
+name: Check for Project Association
+
+on:
+  pull_request:
+    types: [opened, edited, synchronized]
+
+jobs:
+  check-project:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check if PR is associated with a project
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        PR_URL=$(jq -r '.pull_request.url' "$GITHUB_EVENT_PATH")
+        PROJECTS=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" "$PR_URL/projects")
+        if [ "$PROJECTS" = "[]" ]; then
+          echo "This pull request is not associated with a project. Please associate it with a project."
+          exit 1
+        fi
